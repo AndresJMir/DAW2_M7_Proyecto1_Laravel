@@ -35,13 +35,21 @@ class RegisteredUserController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
-
+/*
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
-// Set the default role to "author"
+*/
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role_id' => 1, // Assign the role "author" to new users
+        ]);
+
+        // Set the default role to "author"
         $user->role_id = 1; 
         $user->save();
 //
