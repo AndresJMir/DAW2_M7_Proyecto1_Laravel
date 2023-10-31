@@ -36,3 +36,8 @@ Route::get('/dashboard', function (Request $request) {
    $request->session()->flash('info', 'TEST flash messages');
    return view('dashboard');
 })->middleware(['auth','verified'])->name('dashboard');;
+use App\Http\Controllers\MailController;
+// ...
+Route::get('mail/test', [MailController::class, 'test']);
+// or
+// Route::get('mail/test', 'App\Http\Controllers\MailController@test');
