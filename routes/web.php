@@ -29,3 +29,10 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+use Illuminate\Http\Request;
+// ...
+Route::get('/dashboard', function (Request $request) {
+   $request->session()->flash('info', 'TEST flash messages');
+   return view('dashboard');
+})->middleware(['auth','verified'])->name('dashboard');;
