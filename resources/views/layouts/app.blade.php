@@ -30,7 +30,10 @@
 
             <!-- Page Content -->
             <main>
+            @if (isset($slot))
                 {{ $slot }}
+            @endif
+            @yield('content')
             </main>
         </div>
     </body>
