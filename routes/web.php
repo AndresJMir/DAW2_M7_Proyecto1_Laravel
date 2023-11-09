@@ -44,4 +44,10 @@ Route::get('mail/test', [MailController::class, 'test']);
 // Route::get('mail/test', 'App\Http\Controllers\MailController@test');
 
 use App\Http\Controllers\FileController;
-Route::resource('files', FileController::class);
+Route::resource('files', FileController::class)->middleware(['auth', 'role:2']);
+
+// Route::resource('files', FileController::class);
+// Permetre l’accés al CRUD de files només quan estem autenticats
+// Route::resource('files', FileController::class)->middleware(['auth']);
+// Permetre l’accés al CRUD de files només quan estem sense autenticar.
+// Route::resource('files', FileController::class)->middleware(['guest']);
