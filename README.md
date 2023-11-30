@@ -43,6 +43,10 @@ Activar el servidor usado en debug (recuerda tener el modo debug en .env), recue
     npm run dev
     php artisan serve
 
+Preparar lo necesario para pasar a produccion:
+
+    npm run build
+
 # Git
 
  Descarga los cambios del repositorio remoto en la rama local especificada.
@@ -54,3 +58,5 @@ Descarga los cambios remotos a local:
 Envía cambios locales a remoto:
 
     git push origin branch
+
+Recuerda que el composer no se encuentra aqui.

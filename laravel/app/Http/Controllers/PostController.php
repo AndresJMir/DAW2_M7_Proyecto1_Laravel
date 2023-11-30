@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use App\Models\File;
+use App\Models\Like;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -19,7 +20,7 @@ class PostController extends Controller
      */
     public function index(Request $request)
     {
-        $collectionQuery = Post::orderBy('created_at', 'desc');
+        $collectionQuery = Post::orderBy('created_at', 'desc')->withCount('liked');
 
         // Filter?
         if ($search = $request->get('search')) {
@@ -102,6 +103,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
+        $post->loadCount('liked');
         return view("posts.show", [
             'post'   => $post,
             'file'   => $post->file,
@@ -111,7 +113,7 @@ class PostController extends Controller
 
     /**
      * Show the form for editing the specified resource.
-     *
+     *danger
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
@@ -194,5 +196,24 @@ class PostController extends Controller
         return view("posts.delete", [
             'post' => $post
         ]);
+    }
+    // Redirigir a la vista de donde venimos
+    public function likes(Post $post, Request $request) {
+        // Lógica para añadir like
+        $like = new Like();
+        $like->user_id = $request->user()->id;
+        $like->post_id = $post->id;
+        $like->save();
+        return redirect()->back();
+      }
+      
+    public function unlike(Post $post, Request $request) {
+        // Lógica para eliminar like 
+        $like = Like::where([
+            'user_id' => $request->user()->id,
+            'post_id' => $post->id
+        ])->first(); 
+        $like->delete();
+        return redirect()->back();
     }
 }

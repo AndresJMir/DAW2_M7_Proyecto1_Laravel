@@ -12,16 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('likes', function (Blueprint $table) {
-            $table->unsignedBigInteger('users_id');
-            $table->foreign('users_id')->references('id')->on('users')
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users')
                   ->onUpdate('cascade')->onDelete('cascade');
-            $table->unsignedBigInteger('posts_id');
-            $table->foreign('posts_id')->references('id')->on('places')
+            $table->unsignedBigInteger('post_id');
+            $table->foreign('post_id')->references('id')->on('posts')
                   ->onUpdate('cascade')->onDelete('cascade');
         });
         Schema::table('likes', function (Blueprint $table) {
             $table->id()->first();
-            $table->unique(['users_id', 'posts_id']);
+            $table->unique(['user_id', 'post_id']);
         });
     }
 

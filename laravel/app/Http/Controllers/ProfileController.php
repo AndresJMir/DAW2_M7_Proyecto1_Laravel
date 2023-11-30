@@ -36,7 +36,7 @@ class ProfileController extends Controller
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
-
+    
     /**
      * Delete the user's account.
      */
@@ -57,4 +57,14 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
+    // Redirigir a la vista de donde venimos
+    public function favorite(Place $place) {
+        // Lógica para añadir favorite
+        return redirect()->back();
+      }
+      
+      public function unfavorite(Place $place) {
+        // Lógica para eliminar favorite
+        return redirect()->back(); 
+      }
 }
