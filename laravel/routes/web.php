@@ -9,6 +9,7 @@ use App\Http\Controllers\MailController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PlaceController;
+use App\Http\Controllers\HomeController;
 
 use App\Models\Role;
 
@@ -78,3 +79,8 @@ Route::delete('posts/{post}/likes', [PostController::class, 'unlike'])->name('po
 
 Route::post('places/{place}/favs', [PlaceController::class, 'favorite'])->name('places.favorite'); 
 Route::delete('places/{place}/favs', [PlaceController::class, 'unfavorite'])->name('places.unfavorite');
+
+//Geomir
+
+Route::get('/home', [HomeController::class, 'index'])->name('home');
+
