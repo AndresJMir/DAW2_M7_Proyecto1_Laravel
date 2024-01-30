@@ -8,10 +8,11 @@
     $cols = [
         "id",
         "name",
-        "description",
         "file_id",
         "latitude",
         "longitude",
+        "author.name",
+        "visibility.name",
         "created_at",
         "updated_at"
     ];
@@ -28,9 +29,11 @@
     </div>
     <!-- Buttons -->
     <div class="mt-8">
+        @can('create', App\Models\Place::class)
         <x-primary-button href="{{ route('places.create') }}">
             {{ __('Add new place') }}
         </x-primary-button>
+        @endcan
         <x-secondary-button href="{{ route('dashboard') }}">
             {{ __('Back to dashboard') }}
         </x-secondary-button>

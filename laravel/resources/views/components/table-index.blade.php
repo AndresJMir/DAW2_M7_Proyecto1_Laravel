@@ -43,15 +43,26 @@
             @foreach ($rows as $row)
             <tr class="odd:bg-white odd:dark:bg-gray-100 even:bg-gray-200 even:dark:bg-gray-800 border-b dark:border-gray-700">
                 @foreach ($cols as $col)
+                @php
+                    $keys = explode('.', $col, 2);
+                    $value = count($keys) > 1 ? $row[$keys[0]][$keys[1]] : $row[$keys[0]];
+                @endphp
                 <td scope="row" class="px-6 py-4">
-                    {{ $row[$col] }}
+                    {{ $value }}
                 </td>
                 @endforeach
                 @if ($enableActions)
                 <td scope="row" class="px-6 py-4 min-w-[120px]">
+                    @can('view', $row)
                     <a title="{{ __('View') }}"   href="{{ route($parentRoute . '.show',   $row) }}">👁️</a>
+                    @endcan
+                    @can('update', $row)
                     <a title="{{ __('Edit') }}"   href="{{ route($parentRoute . '.edit',   $row) }}">📝</a>
-                    <a title="{{ __('Delete') }}" href="{{ route($parentRoute . '.delete', $row) }}">🗑️</a>                </td>
+                    @endcan
+                    @can('delete', $row)
+                    <a title="{{ __('Delete') }}" href="{{ route($parentRoute . '.delete', $row) }}">🗑️</a>                
+                    @endcan
+                </td>
                 @endif
             </tr>
             @endforeach

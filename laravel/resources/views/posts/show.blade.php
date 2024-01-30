@@ -33,6 +33,10 @@
                     <td>{{ $author->name }}</td>
                 </tr>
                 <tr>
+                    <td><strong>Visibility</strong></td>
+                    <td>{{ $post->visibility->name }}</td>
+                </tr>
+                <tr>
                     <td><strong>Created</strong></td>
                     <td>{{ $post->created_at }}</td>
                 </tr>
@@ -40,41 +44,28 @@
                     <td><strong>Updated</strong></td>
                     <td>{{ $post->updated_at }}</td>
                 </tr>
-                <tr>
-                    <td><strong>Likes</strong></td>
-                    <td>{{ $post->liked_count }}</td>
-                </tr>
             </tbody>
         </table>
-        <!-- Botones -->
         <div class="mt-8">
-        @if ($post->likedByUser(auth()->user()->id))
-            <!-- form para unlike -->
-            <form action="{{ route('posts.unlike', $post) }}" method="POST">
-                @csrf
-                @method('DELETE')
-                <x-secondary-button type="submit">
-                Unlike
-                </x-secondary-button>
-            </form>
-        @else
-            <!-- form para like -->
-            <form action="{{ route('posts.likes', $post) }}" method="POST">
-                @csrf
-                <x-secondary-button type="submit">
-                Like
-                </x-secondary-button>
-            </form>
-        @endif
+            @can('update', $post)
             <x-primary-button href="{{ route('posts.edit', $post) }}">
                 {{ __('Edit') }}
-            </x-primary-button>
+            </x-danger-button>
+            @endcan
+            @can('delete', $post)
             <x-danger-button href="{{ route('posts.delete', $post) }}">
                 {{ __('Delete') }}
             </x-danger-button>
+            @endcan
+            @can('viewAny', App\Models\Post::class)
             <x-secondary-button href="{{ route('posts.index') }}">
                 {{ __('Back to list') }}
             </x-secondary-button>
+            @endcan
+        </div>
+        <div class="mt-8">
+            <p>{{ $numLikes . " " . __('likes') }}</p>
+            @include('partials.buttons-likes')
         </div>
     @endsection
 </x-columns>

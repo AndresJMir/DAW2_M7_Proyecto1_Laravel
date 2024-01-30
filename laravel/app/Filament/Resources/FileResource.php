@@ -13,30 +13,29 @@ use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
+use Livewire\TemporaryUploadedFile;
+
 class FileResource extends Resource
 {
     protected static ?string $model = File::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-archive';
+    protected static ?string $navigationIcon = 'heroicon-o-photograph';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                // Forms\Components\TextInput::make('filepath')
-                //     ->required()
-                //     ->maxLength(255),
-                Forms\Components\FileUpload::make('filepath')//se cambia de entrada de texto a fichero de entrada
-                ->required()//Hace que el campo sea requerido.
-                ->image()//Solo se permiten imágenes.
-                ->maxSize(2048)//Establece un límite máximo de tamaño de archivo de 2MB
-                ->directory('uploads')//Define que los archivos se guardarán en el directorio "uploads"
-                ->getUploadedFileNameForStorageUsing(function (Livewire\TemporaryUploadedFile $file): string {
-                    return time() . '_' . $file->getClientOriginalName();
-                }),//Sirve personalizar el nombre de archivo antes del almacenamiento.
-                // Forms\Components\TextInput::make('filesize')
-                //     ->required(),//Devuelve un nombre de archivo
-
+                Forms\Components\FileUpload::make('filepath')
+                    ->required()
+                    ->image()
+                    ->maxSize(2048)
+                    ->directory('uploads')
+                    //->preserveFilenames()
+                    ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                        return time() . '_' . $file->getClientOriginalName();
+                    }),
+                /*Forms\Components\TextInput::make('filesize')
+                    ->required(),*/
             ]);
     }
 
@@ -44,7 +43,7 @@ class FileResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('filepath'),
+                Tables\Columns\ImageColumn::make('filepath'),
                 Tables\Columns\TextColumn::make('filesize'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime(),

@@ -8,17 +8,26 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     *
+     * @return void
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('likes', function (Blueprint $table) {
             $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')
-                  ->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('user_id')
+                  ->references('id')->on('users')
+                  ->onUpdate('cascade')
+                  ->onDelete('cascade');
             $table->unsignedBigInteger('post_id');
-            $table->foreign('post_id')->references('id')->on('posts')
-                  ->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('post_id')
+                  ->references('id')->on('posts')
+                  ->onUpdate('cascade')
+                  ->onDelete('cascade');
+            // Eloquent does not support composite PK :-(
+            // $table->primary(['user_id', 'post_id']);
         });
+        // Eloquent compatibility workaround :-)
         Schema::table('likes', function (Blueprint $table) {
             $table->id()->first();
             $table->unique(['user_id', 'post_id']);
@@ -27,8 +36,10 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
+     *
+     * @return void
      */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('likes');
     }

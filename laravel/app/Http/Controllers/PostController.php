@@ -2,15 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+
 use App\Models\Post;
 use App\Models\File;
 use App\Models\Like;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class PostController extends Controller
 {
     private bool $_pagination = true;
+
+    /**
+     * Create the controller instance.
+     */
+    public function __construct()
+    {
+        $this->authorizeResource(Post::class, 'post');
+    }
 
     /**
      * Display a listing of the resource.
@@ -20,8 +29,10 @@ class PostController extends Controller
      */
     public function index(Request $request)
     {
-        $collectionQuery = Post::orderBy('created_at', 'desc')->withCount('liked');
-
+        // Order and count
+        $collectionQuery = Post::withCount('liked')
+            ->orderBy('created_at', 'desc');
+        
         // Filter?
         if ($search = $request->get('search')) {
             $collectionQuery->where('body', 'like', "%{$search}%");
@@ -103,17 +114,20 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
+        // Count
         $post->loadCount('liked');
+
         return view("posts.show", [
-            'post'   => $post,
-            'file'   => $post->file,
-            'author' => $post->user,
+            'post'     => $post,
+            'file'     => $post->file,
+            'author'   => $post->user,
+            'numLikes' => $post->liked_count,
         ]);
     }
 
     /**
      * Show the form for editing the specified resource.
-     *danger
+     *
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
@@ -193,27 +207,50 @@ class PostController extends Controller
      */
     public function delete(Post $post)
     {
+        $this->authorize('delete', $post);
+        
         return view("posts.delete", [
             'post' => $post
         ]);
     }
-    // Redirigir a la vista de donde venimos
-    public function likes(Post $post, Request $request) {
-        // Lógica para añadir like
-        $like = new Like();
-        $like->user_id = $request->user()->id;
-        $like->post_id = $post->id;
-        $like->save();
-        return redirect()->back();
-      }
-      
-    public function unlike(Post $post, Request $request) {
-        // Lógica para eliminar like 
-        $like = Like::where([
-            'user_id' => $request->user()->id,
+
+    /**
+     * Add like
+     *
+     * @param  \App\Models\Post  $post
+     * @return \Illuminate\Http\Response
+     */
+    public function like(Post $post) 
+    {
+        $this->authorize('like', $post);
+
+        $like = Like::create([
+            'user_id'  => auth()->user()->id,
             'post_id' => $post->id
-        ])->first(); 
+        ]);
+
+        return redirect()->back()
+            ->with('success', __('Like successfully saved'));
+    }
+
+    /**
+     * Undo like
+     *
+     * @param  \App\Models\Post  $post
+     * @return \Illuminate\Http\Response
+     */
+    public function unlike(Post $post) 
+    {
+        $this->authorize('unlike', $post);
+
+        $like = Like::where([
+            ['user_id', '=', auth()->user()->id],
+            ['post_id', '=', $post->id],
+        ])->first();
+        
         $like->delete();
-        return redirect()->back();
+
+        return redirect()->back()
+            ->with('success', __('Like successfully deleted'));
     }
 }

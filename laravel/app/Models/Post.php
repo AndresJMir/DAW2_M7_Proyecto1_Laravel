@@ -14,7 +14,8 @@ class Post extends Model
         'file_id',
         'latitude',
         'longitude',
-        'author_id'
+        'author_id',
+        'visibility_id'
     ];
 
     public function file()
@@ -26,17 +27,35 @@ class Post extends Model
     {
         return $this->belongsTo(User::class, 'author_id');
     }
+
+    public function author()
+    {
+        return $this->belongsTo(User::class);
+    }
     
     public function liked()
     {
-       return $this->belongsToMany(User::class, 'likes');
+        return $this->belongsToMany(User::class, 'likes');
     }
     
-    public function likedByUser($userId) : bool
+    public function likedByUser(User $user)
     {
-        return Like::where([
-            'user_id' => $userId,
-            'post_id' => $this -> id,
-        ])->exists();
+        $count = Like::where([
+            ['user_id',  '=', $user->id],
+            ['post_id', '=', $this->id],
+        ])->count();
+        
+        return $count > 0;
+    }
+
+    public function likedByAuthUser()
+    {
+        $user = auth()->user();
+        return $this->likedByUser($user);
+    }
+
+    public function visibility()
+    {
+        return $this->belongsTo(Visibility::class);
     }
 }

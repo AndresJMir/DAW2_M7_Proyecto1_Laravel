@@ -9,6 +9,14 @@ use Illuminate\Support\Facades\Log;
 class FileController extends Controller
 {
     /**
+     * Create the controller instance.
+     */
+    public function __construct()
+    {
+        $this->authorizeResource(File::class, 'file');
+    }
+    
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response

@@ -9,7 +9,7 @@ use App\Http\Controllers\MailController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PlaceController;
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LanguageController;
 
 use App\Models\Role;
 
@@ -47,40 +47,49 @@ require __DIR__.'/auth.php';
 Route::get('mail/test', [MailController::class, 'test']);
 
 // Files
+// NOTE: FilePolicy with authorizeResource helper
 
 Route::resource('files', FileController::class)
-    ->middleware(['auth', 'role:' . Role::ADMIN]);
+    ->middleware(['auth']);
 
 Route::get('files/{file}/delete', [FileController::class, 'delete'])->name('files.delete')
-    ->middleware(['auth', 'role:' . Role::ADMIN]);
+    ->middleware(['auth']);
 
 // Posts
+// NOTE: PostPolicy with authorizeResource and authorize helpers
 
 Route::resource('posts', PostController::class)
-    ->middleware(['auth', 'role.any:' . implode(',', [Role::ADMIN, Role::AUTHOR])]);
+    ->middleware(['auth']);
 
-Route::get('posts/{post}/delete', [PostController::class, 'delete'])->name('posts.delete')
-    ->middleware(['auth', 'role.any:' . implode(',', [Role::ADMIN, Role::AUTHOR])]);
+Route::controller(PostController::class)->group(function () {
+    Route::get('posts/{post}/delete', 'delete')
+        ->name('posts.delete');
+    Route::post('/posts/{post}/likes', 'like')
+        ->name('posts.like');
+    Route::delete('/posts/{post}/likes', 'unlike')
+        ->name('posts.unlike');
+});
 
 // Places
+// NOTE: PlacePolicy with authorizeResource helper and can middleware
 
 Route::resource('places', PlaceController::class)
-    ->middleware(['auth', 'role.any:' . implode(',', [Role::ADMIN, Role::AUTHOR])]);
+    ->middleware(['auth']);
 
-Route::get('places/{place}/delete', [PlaceController::class, 'delete'])->name('places.delete')
-    ->middleware(['auth', 'role.any:' . implode(',', [Role::ADMIN, Role::AUTHOR])]);
+Route::controller(PlaceController::class)->group(function () {
+    Route::get('places/{place}/delete', 'delete')
+        ->middleware(['auth', 'can:delete,place'])
+        ->name('places.delete');
+    Route::post('/places/{place}/favs', 'favorite')
+        ->middleware(['auth', 'can:favorite,place'])
+        ->name('places.favorite');
+    Route::delete('/places/{place}/favs', 'unfavorite')
+        ->middleware(['auth', 'can:unfavorite,place'])
+        ->name('places.unfavorite');
+});
 
-// Likes
+// Language
+// NOTE: Localization middleware
 
-Route::post('posts/{post}/likes', [PostController::class, 'likes'])->name('posts.likes');
-Route::delete('posts/{post}/likes', [PostController::class, 'unlike'])->name('posts.unlike');
-
-// Fav
-
-Route::post('places/{place}/favs', [PlaceController::class, 'favorite'])->name('places.favorite'); 
-Route::delete('places/{place}/favs', [PlaceController::class, 'unfavorite'])->name('places.unfavorite');
-
-//Geomir
-
-Route::get('/home', [HomeController::class, 'index'])->name('home');
-
+Route::get('/language/{locale}', [LanguageController::class, 'language'])
+    ->name('language');

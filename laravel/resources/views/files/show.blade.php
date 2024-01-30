@@ -45,15 +45,21 @@
             </tbody>
         </table>
         <div class="mt-8">
+            @can('update', $file)
             <x-primary-button href="{{ route('files.edit', $file) }}">
                 {{ __('Edit') }}
             </x-danger-button>
+            @endcan
+            @can('delete', $file)
             <x-danger-button href="{{ route('files.delete', $file) }}">
                 {{ __('Delete') }}
             </x-danger-button>
+            @endcan
+            @can('viewAny', App\Models\File::class)
             <x-secondary-button href="{{ route('files.index') }}">
                 {{ __('Back to list') }}
             </x-secondary-button>
+            @endcan
         </div>
     @endsection
 </x-columns>

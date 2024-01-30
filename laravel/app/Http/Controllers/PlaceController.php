@@ -2,14 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Place;
-use App\Models\File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+
+use App\Models\Place;
+use App\Models\File;
+use App\Models\Favorite;
 
 class PlaceController extends Controller
 {
     private bool $_pagination = true;
+
+    /**
+     * Create the controller instance.
+     */
+    public function __construct()
+    {
+        $this->authorizeResource(Place::class, 'place');
+    }
 
     /**
      * Display a listing of the resource.
@@ -19,7 +29,9 @@ class PlaceController extends Controller
      */
     public function index(Request $request)
     {
-        $collectionQuery = Place::orderBy('created_at', 'desc');
+        // Order and count
+        $collectionQuery = Place::withCount('favorited')
+            ->orderBy('created_at', 'desc');
 
         // Filter?
         if ($search = $request->get('search')) {
@@ -106,10 +118,14 @@ class PlaceController extends Controller
      */
     public function show(Place $place)
     {
+        // Count
+        $place->loadCount('favorited');
+
         return view("places.show", [
-            'place'  => $place,
-            'file'   => $place->file,
-            'author' => $place->user,
+            'place'   => $place,
+            'file'    => $place->file,
+            'author'  => $place->user,
+            'numFavs' => $place->favorited_count,
         ]);
     }
 
@@ -201,5 +217,41 @@ class PlaceController extends Controller
         return view("places.delete", [
             'place' => $place
         ]);
+    }
+
+    /**
+     * Add favorite place
+     *
+     * @param  \App\Models\Place  $place
+     * @return \Illuminate\Http\Response
+     */
+    public function favorite(Place $place) 
+    {
+        $fav = Favorite::create([
+            'user_id'  => auth()->user()->id,
+            'place_id' => $place->id
+        ]);
+
+        return redirect()->back()
+            ->with('success', __('Favorite successfully saved'));
+    }
+
+    /**
+     * Undo favorite
+     *
+     * @param  \App\Models\Place  $place
+     * @return \Illuminate\Http\Response
+     */
+    public function unfavorite(Place $place) 
+    {
+        $fav = Favorite::where([
+            ['user_id',  '=', auth()->user()->id],
+            ['place_id', '=', $place->id],
+        ])->first();
+        
+        $fav->delete();
+        
+        return redirect()->back()
+            ->with('success', __('Favorite successfully deleted'));
     }
 }

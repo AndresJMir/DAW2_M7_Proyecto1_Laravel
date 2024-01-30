@@ -8,10 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 class Like extends Model
 {
     use HasFactory;
+
+    public $timestamps = false;
     
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'user_id',
-        'post_id'
+        'post_id',
     ];
-    public $timestamps = false;
 }

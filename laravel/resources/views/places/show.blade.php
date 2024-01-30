@@ -37,6 +37,10 @@
                     <td>{{ $author->name }}</td>
                 </tr>
                 <tr>
+                    <td><strong>Visibility</strong></td>
+                    <td>{{ $place->visibility->name }}</td>
+                </tr>
+                <tr>
                     <td><strong>Created</strong></td>
                     <td>{{ $place->created_at }}</td>
                 </tr>
@@ -47,15 +51,25 @@
             </tbody>
         </table>
         <div class="mt-8">
+            @can('update', $place)
             <x-primary-button href="{{ route('places.edit', $place) }}">
                 {{ __('Edit') }}
             </x-danger-button>
+            @endcan
+            @can('delete', $place)
             <x-danger-button href="{{ route('places.delete', $place) }}">
                 {{ __('Delete') }}
             </x-danger-button>
+            @endcan
+            @can('viewAny', App\Models\Place::class)
             <x-secondary-button href="{{ route('places.index') }}">
                 {{ __('Back to list') }}
             </x-secondary-button>
+            @endcan
+        </div>
+        <div class="mt-8">
+            <p>{{ $numFavs . " " . __('favorites') }}</p>
+            @include('partials.buttons-favs')
         </div>
     @endsection
 </x-columns>

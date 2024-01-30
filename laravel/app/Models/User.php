@@ -7,9 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-// Implementacion de Filament
 use Filament\Models\Contracts\FilamentUser;
-
+use Illuminate\Support\Facades\Log;
 
 class User extends Authenticatable implements FilamentUser
 {
@@ -45,23 +44,31 @@ class User extends Authenticatable implements FilamentUser
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
-    
-    public function likes()
+
+    public function role()
     {
-       return $this->belongsToMany(Post::class, 'likes');
-    }	
-    public function favorites()
-    {
-       return $this->belongsToMany(Place::class, 'favorites');
+        return $this->belongsTo(Role::class);
     }
 
     public function canAccessFilament() : bool
     {
-        return $this->role_id == 3 || $this->role_id == 2; /* Check user role! 3=admin 2=editor*/
+        $roles = [Role::ADMIN, Role::EDITOR];
+        Log::debug("User with role '{$this->role->name}' accessing Filament");
+        return in_array($this->role->id, $roles);
     }
-    public function role()
-   {
-       return $this->belongsTo(Role::class);
-   }
 
+    public function isAdmin()
+    {
+        return $this->role_id == Role::ADMIN;
+    }
+
+    public function isEditor()
+    {
+        return $this->role_id == Role::EDITOR;
+    }
+
+    public function isPublisher()
+    {
+        return $this->role_id == Role::AUTHOR;
+    }
 }
