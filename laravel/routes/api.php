@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\FileController;
 
 
 Route::apiResource('files', FileController::class);
+Route::post('files/{file}', [FileController::class, 'update_workaround']);
 
 /*
 |--------------------------------------------------------------------------

@@ -32,13 +32,10 @@ class FileController extends Controller
         $upload = $request->file('upload');
         $file = new File();
         $ok = $file->diskSave($upload);
-
-
         if ($ok) {
             return response()->json([
                 'success'  => true,
-                'message' => 'Añadido',
-                'data'    => File::all()
+                'data'    => $file
             ], 201);
         } else {
             return response()->json([
@@ -51,7 +48,7 @@ class FileController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
         // Buscar el archivo por su ID
         $file = File::find($id);
@@ -59,7 +56,7 @@ class FileController extends Controller
         if ($file){
             return response()->json([
                 'success'  => true,
-                'message' => 'Perfe show'
+                'data'  => $file,
             ], 200);}
         else {
             return response()->json([
@@ -76,22 +73,24 @@ class FileController extends Controller
     {
         // Buscar el archivo por su ID
         $file = File::find($id);
-
         if ($file){
             // Validar fitxer
             $validatedData = $request->validate([
                 'upload' => 'required|mimes:gif,jpeg,jpg,png|max:2048'
             ]);
-            // Actualizar el archivo
-            $file->name = $validatedData['name'] ?? $file->name;
-            $file->description = $validatedData['description'] ?? $file->description;
-            $file->save();
-            // Funciona
-            return response()->json([
-                'success' => true,
-                'data'    => $file
-            ], 200);
-        } else {
+            // Desar fitxer al disc i actualitzar dades a BD
+            $upload = $request->file('upload');
+            $ok = $file->diskSave($upload);
+            if ($ok) {
+                // Funciona
+                return response()->json([
+                    'success' => true,
+                    'data'    => $file
+                ], 200);
+            } else {
+                // No Funciona
+            }
+        } else { // Tampoco
             return response()->json([
                 'success'  => false,
                 'message' => 'Fail show'
@@ -104,14 +103,14 @@ class FileController extends Controller
      */
     public function destroy(string $id)
     {
-        //
         // Buscar el archivo por su ID
         $file = File::find($id);
         if ($file){
-            $file->delete();
+            // Eliminar el archivo del disco y de la base de datos
+            $file->diskDelete();
             return response()->json([
-                'success'  => true,
-                'message' => 'File deleted'
+                'success' => true,
+                'data'    => $file
             ], 200);}
         else {
             return response()->json([
@@ -120,4 +119,10 @@ class FileController extends Controller
             ], 404);
         }
     }
+
+    public function update_workaround(Request $request, $id)
+   {
+       return $this->update($request, $id);
+   }
+
 }
