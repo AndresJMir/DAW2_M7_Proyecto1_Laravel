@@ -49,15 +49,16 @@ Route::get('mail/test', [MailController::class, 'test']);
 // Files
 // NOTE: FilePolicy with authorizeResource helper
 
-// Comentado debido al error al comando php artisan optimize
+// Al comando <php artisan optimize>
 // Another route has already been assigned name [files.index].
+// Si comentas no da el error pero deja de poder entrarse a files desde el navegador, a la API no afecta!
 //*
 
-// Route::resource('files', FileController::class)
-//     ->middleware(['auth']);
+Route::resource('files', FileController::class)
+    ->middleware(['auth']);
 
-// Route::get('files/{file}/delete', [FileController::class, 'delete'])->name('files.delete')
-//     ->middleware(['auth']);
+Route::get('files/{file}/delete', [FileController::class, 'delete'])->name('files.delete')
+    ->middleware(['auth']);
 
 //*
 
