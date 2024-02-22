@@ -49,11 +49,17 @@ Route::get('mail/test', [MailController::class, 'test']);
 // Files
 // NOTE: FilePolicy with authorizeResource helper
 
-Route::resource('files', FileController::class)
-    ->middleware(['auth']);
+// Comentado debido al error al comando php artisan optimize
+// Another route has already been assigned name [files.index].
+//*
 
-Route::get('files/{file}/delete', [FileController::class, 'delete'])->name('files.delete')
-    ->middleware(['auth']);
+// Route::resource('files', FileController::class)
+//     ->middleware(['auth']);
+
+// Route::get('files/{file}/delete', [FileController::class, 'delete'])->name('files.delete')
+//     ->middleware(['auth']);
+
+//*
 
 // Posts
 // NOTE: PostPolicy with authorizeResource and authorize helpers

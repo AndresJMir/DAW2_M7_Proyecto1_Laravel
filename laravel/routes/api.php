@@ -25,37 +25,25 @@ Route::post('files/{file}', [FileController::class, 'update_workaround']);
 
 //Manera 1
 
-// // El guest
-// Route::middleware('guest')->group(function () {
-//     Route::post('/register', [TokenController::class, 'register']);
-//     Route::post('/login', [TokenController::class, 'login']);
-// });
+// El guest
+Route::middleware('guest')->group(function () {
+    Route::post('/register', [TokenController::class, 'register']);
+    Route::post('/login', [TokenController::class, 'login']);
+});
 
-// //Santum
-// Route::middleware('auth:sanctum')->group(function () {
-//     Route::get('user', [TokenController::class, 'user']);
-//     Route::post('logout', [TokenController::class, 'logout']);
-// });
+//Santum
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('user', [TokenController::class, 'user']);
+    Route::post('logout', [TokenController::class, 'logout']);
+});
 
-//Manera 2
-Route::post('login', [TokenController::class, 'login']);
-Route::post('register', [TokenController::class, 'register']);
-Route::get('user', [TokenController::class, 'user'])->middleware('auth:sanctum');
-Route::post('logout', [TokenController::class, 'logout'])->middleware('auth:sanctum');
+// //Manera 2
+// Route::post('login', [TokenController::class, 'login']);
+// Route::post('register', [TokenController::class, 'register']);
+// Route::get('user', [TokenController::class, 'user'])->middleware('auth:sanctum');
+// Route::post('logout', [TokenController::class, 'logout'])->middleware('auth:sanctum');
 
 //Cosas
-
-// // El guest
-// Route::middleware('guest')->group(function () {
-//     Route::post('/register', [TokenController::class, 'register']);
-//     Route::post('/login', [TokenController::class, 'login']);
-// });
-
-// //Santum
-// Route::middleware('auth:sanctum')->group(function () {
-//     Route::get('user', [TokenController::class, 'user']);
-//     Route::post('logout', [TokenController::class, 'logout']);
-// });
 
 // // El guest
 // Route::middleware('guest')->group(function () {
@@ -67,8 +55,6 @@ Route::post('logout', [TokenController::class, 'logout'])->middleware('auth:sanc
 //     Route::get('user', [TokenController::class, 'user']);
 //     Route::post('logout', [TokenController::class, 'logout']);
 // });
-
-
 
 //Pruevas
 
@@ -88,4 +74,3 @@ Route::post('logout', [TokenController::class, 'logout'])->middleware('auth:sanc
 //     Route::get('logout', [TokenController::class, 'logout']);
 // });
 
-//Carajo, por que no va el por consiguiente?
